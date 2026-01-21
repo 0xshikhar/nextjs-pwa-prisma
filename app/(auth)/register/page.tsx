@@ -6,6 +6,14 @@ import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -35,21 +43,17 @@ export default function RegisterPage() {
   return (
     <div className="min-h-[calc(100vh-65px)] px-6 py-12">
       <div className="mx-auto w-full max-w-md">
-        <div className="rounded-xl border bg-card p-6 text-card-foreground shadow-sm">
-          <div className="space-y-1">
-            <h1 className="text-2xl font-semibold tracking-tight">
-              Create account
-            </h1>
-            <p className="text-sm text-muted-foreground">
+        <Card>
+          <CardHeader>
+            <CardTitle>Create account</CardTitle>
+            <CardDescription>
               Create your account and sign in right away.
-            </p>
-          </div>
-
-          <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
-            <div className="space-y-2">
-              <label htmlFor="name" className="text-sm font-medium">
-                Name
-              </label>
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-4" onSubmit={handleSubmit}>
+              <div className="space-y-2">
+                <Label htmlFor="name">Name</Label>
               <Input
                 id="name"
                 name="name"
@@ -58,12 +62,10 @@ export default function RegisterPage() {
                 placeholder="Your name"
                 autoComplete="name"
               />
-            </div>
+              </div>
 
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium">
-                Email
-              </label>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 name="email"
@@ -72,12 +74,10 @@ export default function RegisterPage() {
                 placeholder="you@example.com"
                 autoComplete="email"
               />
-            </div>
+              </div>
 
-            <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium">
-                Password
-              </label>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 name="password"
@@ -86,23 +86,23 @@ export default function RegisterPage() {
                 placeholder="••••••••"
                 autoComplete="new-password"
               />
+              </div>
+
+              {error && <div className="text-sm text-destructive">{error}</div>}
+
+              <Button type="submit" className="w-full">
+                Register
+              </Button>
+            </form>
+
+            <div className="mt-6 text-sm">
+              <Link href="/login" className="text-primary hover:underline">
+                Already have an account? Sign in
+              </Link>
             </div>
-
-            {error && <div className="text-sm text-destructive">{error}</div>}
-
-            <Button type="submit" className="w-full">
-              Register
-            </Button>
-          </form>
-
-          <div className="mt-6 text-sm">
-            <Link href="/login" className="text-primary hover:underline">
-              Already have an account? Sign in
-            </Link>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
 }
-

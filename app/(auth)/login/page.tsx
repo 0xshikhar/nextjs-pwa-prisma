@@ -6,6 +6,14 @@ import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -35,19 +43,17 @@ export default function LoginPage() {
   return (
     <div className="min-h-[calc(100vh-65px)] px-6 py-12">
       <div className="mx-auto w-full max-w-md">
-        <div className="rounded-xl border bg-card p-6 text-card-foreground shadow-sm">
-          <div className="space-y-1">
-            <h1 className="text-2xl font-semibold tracking-tight">Sign in</h1>
-            <p className="text-sm text-muted-foreground">
+        <Card>
+          <CardHeader>
+            <CardTitle>Sign in</CardTitle>
+            <CardDescription>
               Use your email and password to continue.
-            </p>
-          </div>
-
-          <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium">
-                Email
-              </label>
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form className="space-y-4" onSubmit={handleSubmit}>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 name="email"
@@ -56,12 +62,10 @@ export default function LoginPage() {
                 placeholder="you@example.com"
                 autoComplete="email"
               />
-            </div>
+              </div>
 
-            <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium">
-                Password
-              </label>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 name="password"
@@ -70,23 +74,23 @@ export default function LoginPage() {
                 placeholder="••••••••"
                 autoComplete="current-password"
               />
+              </div>
+
+              {error && <div className="text-sm text-destructive">{error}</div>}
+
+              <Button type="submit" className="w-full">
+                Sign in
+              </Button>
+            </form>
+
+            <div className="mt-6 text-sm">
+              <Link href="/register" className="text-primary hover:underline">
+                No account? Register
+              </Link>
             </div>
-
-            {error && <div className="text-sm text-destructive">{error}</div>}
-
-            <Button type="submit" className="w-full">
-              Sign in
-            </Button>
-          </form>
-
-          <div className="mt-6 text-sm">
-            <Link href="/register" className="text-primary hover:underline">
-              No account? Register
-            </Link>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
 }
-
