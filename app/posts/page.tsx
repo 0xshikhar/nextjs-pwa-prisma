@@ -3,6 +3,10 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface Post {
   id: number;
@@ -24,10 +28,12 @@ function PostsList() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchPosts() {
       setIsLoading(true);
+      setError(null);
       try {
         const res = await fetch(`/api/posts?page=${page}`);
         if (!res.ok) {
@@ -37,7 +43,7 @@ function PostsList() {
         setPosts(data.posts);
         setTotalPages(data.totalPages);
       } catch (error) {
-        console.error("Error fetching posts:", error);
+        setError(error instanceof Error ? error.message : "Failed to fetch posts");
       } finally {
         setIsLoading(false);
       }
@@ -48,46 +54,59 @@ function PostsList() {
 
   return (
     <>
+      {error && (
+        <div className="mx-auto mb-6 w-full max-w-4xl">
+          <Alert variant="destructive">
+            <AlertTitle>Couldn’t load posts</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        </div>
+      )}
       {isLoading ? (
-        <div className="flex items-center justify-center space-x-2 min-h-[200px]">
-          <div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-gray-600">Loading...</p>
+        <div className="mx-auto w-full max-w-4xl space-y-4">
+          <Skeleton className="h-20 w-full" />
+          <Skeleton className="h-20 w-full" />
+          <Skeleton className="h-20 w-full" />
         </div>
       ) : (
         <>
           {posts.length === 0 ? (
-            <p className="text-gray-600">No posts available.</p>
+            <p className="text-sm text-muted-foreground">No posts available.</p>
           ) : (
-            <ul className="space-y-6 w-full max-w-4xl mx-auto">
+            <ul className="mx-auto w-full max-w-4xl space-y-4">
               {posts.map((post) => (
-                <li key={post.id} className="border p-6 rounded-lg shadow-md bg-white">
-                  <Link href={`/posts/${post.id}`} className="text-2xl font-semibold text-gray-900 hover:underline">
-                    {post.title}
+                <li key={post.id}>
+                  <Link href={`/posts/${post.id}`} className="block">
+                    <Card className="transition-shadow hover:shadow-md">
+                      <CardHeader>
+                        <CardTitle className="text-lg">{post.title}</CardTitle>
+                        <CardDescription>
+                          by {post.author?.name || "Anonymous"} ·{" "}
+                          {new Date(post.createdAt).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })}
+                        </CardDescription>
+                      </CardHeader>
+                    </Card>
                   </Link>
-                  <p className="text-sm text-gray-500">by {post.author?.name || "Anonymous"}</p>
-                  <p className="text-xs text-gray-400">
-                    {new Date(post.createdAt).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </p>
                 </li>
               ))}
             </ul>
           )}
 
           {/* Pagination Controls */}
-          <div className="flex justify-center space-x-4 mt-8">
+          <div className="mt-8 flex justify-center gap-3">
             {page > 1 && (
-              <Link href={`/posts?page=${page - 1}`}>
-                <button className="px-4 py-2 bg-gray-200 rounded-sm hover:bg-gray-300">Previous</button>
-              </Link>
+              <Button asChild variant="secondary">
+                <Link href={`/posts?page=${page - 1}`}>Previous</Link>
+              </Button>
             )}
             {page < totalPages && (
-              <Link href={`/posts?page=${page + 1}`}>
-                <button className="px-4 py-2 bg-gray-200 rounded-sm hover:bg-gray-300">Next</button>
-              </Link>
+              <Button asChild variant="secondary">
+                <Link href={`/posts?page=${page + 1}`}>Next</Link>
+              </Button>
             )}
           </div>
         </>
@@ -98,12 +117,13 @@ function PostsList() {
 
 export default function PostsPage() {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-start p-8">
+    <div className="mx-auto w-full max-w-6xl px-6 py-12">
       <Suspense
         fallback={
-          <div className="flex items-center justify-center min-h-screen">
-            <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-            <p className="ml-3 text-gray-600">Loading page...</p>
+          <div className="mx-auto w-full max-w-4xl space-y-4">
+            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-20 w-full" />
           </div>
         }
       >
