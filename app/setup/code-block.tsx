@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { ClipboardCopy } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 interface CodeBlockProps {
   code: string;
@@ -15,30 +17,35 @@ export function CodeBlock({ code }: CodeBlockProps) {
       await navigator.clipboard.writeText(code);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error("Failed to copy text: ", err);
+    } catch {
+      return;
     }
   };
 
   return (
-    <div className="relative bg-gray-900 rounded-md overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2 bg-gray-800">
-        <span className="text-xs text-gray-400">Terminal</span>
-        <button
+    <Card className="overflow-hidden">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b bg-muted/50 py-2">
+        <span className="text-xs text-muted-foreground">Terminal</span>
+        <Button
           onClick={copyToClipboard}
-          className="text-gray-400 hover:text-white transition-colors"
+          variant="ghost"
+          size="sm"
+          type="button"
           aria-label="Copy to clipboard"
+          className="h-8 px-2"
         >
           {copied ? (
-            <span className="text-green-400 text-xs">Copied!</span>
+            <span className="text-xs">Copied</span>
           ) : (
-            <ClipboardCopy size={16} />
+            <ClipboardCopy className="h-4 w-4" />
           )}
-        </button>
-      </div>
-      <pre className="p-4 overflow-x-auto text-gray-300 text-sm">
-        <code>{code}</code>
-      </pre>
-    </div>
+        </Button>
+      </CardHeader>
+      <CardContent className="bg-zinc-950 p-4">
+        <pre className="overflow-x-auto text-sm text-zinc-200">
+          <code>{code}</code>
+        </pre>
+      </CardContent>
+    </Card>
   );
 }
