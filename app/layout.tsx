@@ -3,6 +3,8 @@ import Providers from "./providers";
 import type { Metadata, Viewport } from "next";
 import Header from "@/components/header";
 import PwaRegister from "@/components/pwa-register";
+import PwaInstallBanner from "@/components/pwa-install-banner";
+import PwaUpdateBanner from "@/components/pwa-update-banner";
 
 export const metadata: Metadata = {
   title: "Superblog",
@@ -26,6 +28,8 @@ export default function RootLayout({
           <PwaRegister />
           <div className="min-h-screen flex flex-col">
             <Header />
+            <PwaInstallBanner />
+            <PwaUpdateBanner />
             <main className="flex-1">{children}</main>
           </div>
         </Providers>
