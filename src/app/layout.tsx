@@ -27,8 +27,8 @@ export default function RootLayout({
         <Providers>
           <PwaRegister />
           <div className="min-h-screen flex flex-col">
-            <Header />
             <PwaInstallBanner />
+            <Header />
             <PwaUpdateBanner />
             <main className="flex-1">{children}</main>
           </div>
