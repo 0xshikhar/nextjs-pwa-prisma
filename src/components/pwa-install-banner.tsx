@@ -1,10 +1,19 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Download, Share2, X } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
@@ -37,6 +46,7 @@ export default function PwaInstallBanner() {
     "unknown",
   );
   const [installed, setInstalled] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
 
   const ios = platform === "ios";
 
@@ -64,13 +74,7 @@ export default function PwaInstallBanner() {
     };
   }, []);
 
-  const shouldShow = useMemo(() => {
-    if (dismissed) return false;
-    if (platform === "unknown") return false;
-    if (installed) return false;
-    if (ios) return true;
-    return bipEvent !== null;
-  }, [bipEvent, dismissed, installed, ios, platform]);
+  const shouldShow = !dismissed && platform !== "unknown" && !installed;
 
   if (!shouldShow) return null;
 
@@ -94,6 +98,18 @@ export default function PwaInstallBanner() {
     }
   };
 
+  const primaryAction = async () => {
+    if (ios) {
+      setHelpOpen(true);
+      return;
+    }
+    if (bipEvent) {
+      await install();
+      return;
+    }
+    setHelpOpen(true);
+  };
+
   return (
     <div className="border-b bg-background">
       <div className="mx-auto w-full max-w-6xl px-6 py-3">
@@ -108,17 +124,17 @@ export default function PwaInstallBanner() {
                 To install, tap <Share2 className="h-4 w-4" /> then “Add to Home
                 Screen”.
               </span>
-            ) : (
+            ) : bipEvent ? (
               "Install the app for a faster, more native experience."
+            ) : (
+              "To install, open your browser menu and choose “Install app” / “Add to Home screen”."
             )}
           </AlertDescription>
 
           <div className="mt-3 flex items-center gap-2">
-            {!ios && (
-              <Button onClick={install} type="button" size="sm">
-                Install
-              </Button>
-            )}
+            <Button onClick={primaryAction} type="button" size="sm">
+              Install
+            </Button>
             <Button onClick={dismiss} type="button" size="sm" variant="ghost">
               Not now
             </Button>
@@ -135,6 +151,45 @@ export default function PwaInstallBanner() {
             <X className="h-4 w-4" />
           </Button>
         </Alert>
+
+        <Dialog open={helpOpen} onOpenChange={setHelpOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Install Superblog</DialogTitle>
+              <DialogDescription>
+                Add the app to your home screen for a faster, more native experience.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-3 text-sm">
+              {ios ? (
+                <div className="space-y-2">
+                  <div className="font-medium">iPhone / iPad (Safari)</div>
+                  <div className="text-muted-foreground">
+                    Tap <Share2 className="inline h-4 w-4 align-text-bottom" /> then
+                    choose “Add to Home Screen”.
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <div className="font-medium">Chrome / Edge</div>
+                  <div className="text-muted-foreground">
+                    Use the browser menu and select “Install app” / “Add to Home screen”.
+                    If you see an install icon in the address bar, you can use that too.
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button type="button" variant="secondary">
+                  Got it
+                </Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
