@@ -3,7 +3,7 @@
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/auth";
+import { authOptions } from "@/lib/auth";
 
 export async function createPost(formData: FormData) {
   const session = await getServerSession(authOptions);
